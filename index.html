@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>داشبورد فروشندگان</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0f1729;--card:#1a2438;--card2:#222e47;--ink:#eef2fb;--mut:#93a1c0;--line:#2c3a57;
+--blue:#3b82f6;--grn:#22c55e;--red:#ef4444;--amb:#f59e0b;--gold:#fbbf24}
+body{font-family:Vazirmatn,Tahoma,system-ui,sans-serif;background:var(--bg);color:var(--ink);
+direction:rtl;font-size:15px;line-height:1.7;min-height:100vh}
+.wrap{max-width:680px;margin:0 auto;padding:14px 14px 60px}
+
+/* ---------- صفحه ورود ---------- */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.login-box h1{font-size:20px;font-weight:800;text-align:center;margin-bottom:4px}
+.login-box .sub{color:var(--mut);font-size:13px;text-align:center;margin-bottom:22px}
+.login-box label{display:block;font-size:13px;color:var(--mut);margin:14px 0 6px}
+.login-box input{width:100%;background:#0b1120;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px;font-family:inherit;font-size:15px}
+.login-box button{width:100%;margin-top:20px;border:none;border-radius:12px;padding:13px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff}
+.login-err{color:#fca5a5;font-size:13px;margin-top:12px;text-align:center;display:none}
+
+/* ---------- هدر و KPI ---------- */
+.hd{background:linear-gradient(135deg,#1e3a8a,#3b0764);border-radius:18px;padding:18px;margin-bottom:13px;box-shadow:0 8px 30px rgba(0,0,0,.4);display:flex;justify-content:space-between;align-items:center}
+.hd h1{font-size:19px;font-weight:800}.hd .sub{color:#c7d2fe;font-size:12px;margin-top:6px}
+.logout{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:10px;padding:8px 12px;font-family:inherit;font-size:12px;cursor:pointer}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.kpi .l{color:var(--mut);font-size:12px}.kpi .v{font-size:18px;font-weight:800;margin-top:4px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:13px}
+.tg{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px;text-align:center}
+.tg .n{font-size:19px;font-weight:800}.tg .c{font-size:11px;color:var(--mut);margin-top:2px}
+
+.search{width:100%;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 14px;font-family:inherit;font-size:14px;margin-bottom:10px}
+
+.rsec{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.rhd{display:flex;align-items:center;gap:10px;padding:12px 13px;cursor:pointer;user-select:none}
+.rinfo{flex:1}.rname{font-weight:800;font-size:15px}.rmeta{color:var(--mut);font-size:12px;margin-top:2px}
+.rar{color:var(--mut);font-size:15px;transition:.2s}.rar.op{transform:rotate(180deg)}
+.rbody{padding:0 11px 8px}.rbody.hide{display:none}
+
+.cust{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.cust .nm{font-weight:800;font-size:14.5px}.cust .rt{color:var(--mut);font-size:12px;margin-top:2px}
+.bal{font-size:13px;font-weight:800;white-space:nowrap;text-align:left}
+.bal.ok{color:var(--grn)}.bal.orange{color:var(--amb)}.bal.red{color:var(--red)}
+.age{font-size:11px;color:var(--mut);margin-top:3px}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:5px}
+.status-dot.ok{background:var(--grn)}.status-dot.orange{background:var(--amb)}.status-dot.red{background:var(--red)}
+
+.empty{text-align:center;color:var(--mut);padding:40px 10px;font-size:14px}
+.loading{text-align:center;color:var(--mut);padding:40px 10px}
+</style>
+</head>
+<body>
+
+<!-- ================= صفحه ورود ================= -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-box">
+    <h1>ورود فروشنده</h1>
+    <div class="sub">داشبورد مانده حساب مشتریان</div>
+    <label>نام کاربری</label>
+    <input id="loginUser" type="text" autocomplete="username">
+    <label>رمز عبور</label>
+    <input id="loginPass" type="password" autocomplete="current-password">
+    <button onclick="doLogin()">ورود</button>
+    <div id="loginErr" class="login-err"></div>
+  </div>
+</div>
+
+<!-- ================= داشبورد ================= -->
+<div id="dashScreen" class="wrap" style="display:none">
+  <div class="hd">
+    <div>
+      <h1 id="sellerNameEl">—</h1>
+      <div class="sub" id="todayEl"></div>
+    </div>
+    <button class="logout" onclick="doLogout()">خروج</button>
+  </div>
+
+  <div class="tgrid">
+    <div class="tg"><div class="n" id="cntOk">0</div><div class="c">🟢 جاری</div></div>
+    <div class="tg"><div class="n" id="cntOrange">0</div><div class="c">🟠 سررسید</div></div>
+    <div class="tg"><div class="n" id="cntRed">0</div><div class="c">🔴 معوق</div></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="l">تعداد مشتری</div><div class="v" id="kpiCount">0</div></div>
+    <div class="kpi"><div class="l">جمع مانده بدهی</div><div class="v" id="kpiTotal">0</div></div>
+  </div>
+
+  <input class="search" id="searchBox" placeholder="جستجوی نام مشتری..." oninput="renderList()">
+
+  <div id="listWrap"><div class="loading">در حال بارگذاری...</div></div>
+</div>
+
+<script>
+/* =========== تنظیمات: آدرس Web App گوگل اسکریپت رو اینجا بذارید =========== */
+var API_URL = "https://script.google.com/macros/s/AKfycbxturR7sj-Qg7OR2Oo8ls6Ppck1k5N7u43x2vTgBPWh6wAXXUxLugUiZRwq3w3LjULiMA/exec";
+
+var STATE = { customers: [], sellerName: '', isAdmin: false };
+
+function faNum(n) {
+  return Number(n).toLocaleString('fa-IR');
+}
+
+function toast(msg) {
+  var el = document.getElementById('loginErr');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function doLogin() {
+  var u = document.getElementById('loginUser').value.trim();
+  var p = document.getElementById('loginPass').value.trim();
+  if (!u || !p) { toast('نام کاربری و رمز عبور را وارد کنید'); return; }
+  document.getElementById('loginErr').style.display = 'none';
+
+  fetch(API_URL + '?action=login&username=' + encodeURIComponent(u) + '&password=' + encodeURIComponent(p))
+    .then(function(r){ return r.json(); })
+    .then(function(res) {
+      if (!res.ok) { toast(res.error || 'خطا در ورود'); return; }
+      sessionStorage.setItem('u', u);
+      sessionStorage.setItem('p', p);
+      showDashboard();
+    })
+    .catch(function(){ toast('اتصال به سرور برقرار نشد. آدرس API را بررسی کنید.'); });
+}
+
+function doLogout() {
+  sessionStorage.removeItem('u');
+  sessionStorage.removeItem('p');
+  document.getElementById('dashScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function showDashboard() {
+  var u = sessionStorage.getItem('u'), p = sessionStorage.getItem('p');
+  if (!u || !p) return;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashScreen').style.display = 'block';
+  document.getElementById('listWrap').innerHTML = '<div class="loading">در حال بارگذاری...</div>';
+
+  fetch(API_URL + '?action=dashboard&username=' + encodeURIComponent(u) + '&password=' + encodeURIComponent(p))
+    .then(function(r){ return r.json(); })
+    .then(function(res) {
+      if (!res.ok) { doLogout(); toast(res.error || 'خطا'); return; }
+      STATE.customers = res.customers;
+      STATE.sellerName = res.sellerName;
+      STATE.isAdmin = res.isAdmin;
+      document.getElementById('sellerNameEl').textContent = res.sellerName;
+      document.getElementById('todayEl').textContent = new Date().toLocaleDateString('fa-IR');
+      renderList();
+    })
+    .catch(function(){ document.getElementById('listWrap').innerHTML = '<div class="empty">اتصال برقرار نشد</div>'; });
+}
+
+function statusLabel(s) {
+  return s === 'red' ? '🔴 معوق' : (s === 'orange' ? '🟠 سررسید شده' : '🟢 جاری');
+}
+
+function renderList() {
+  var q = document.getElementById('searchBox').value.trim();
+  var list = STATE.customers.filter(function(c) {
+    return !q || String(c.customerName).indexOf(q) !== -1;
+  });
+
+  // شمارش وضعیت‌ها و جمع مانده (روی کل مشتری‌ها، نه فقط نتیجه جستجو)
+  var cOk=0, cOrange=0, cRed=0, total=0;
+  STATE.customers.forEach(function(c) {
+    total += Number(c.balance) || 0;
+    if (c.status === 'red') cRed++; else if (c.status === 'orange') cOrange++; else cOk++;
+  });
+  document.getElementById('cntOk').textContent = faNum(cOk);
+  document.getElementById('cntOrange').textContent = faNum(cOrange);
+  document.getElementById('cntRed').textContent = faNum(cRed);
+  document.getElementById('kpiCount').textContent = faNum(STATE.customers.length);
+  document.getElementById('kpiTotal').textContent = faNum(total);
+
+  // گروه‌بندی بر اساس مسیر (و در حالت ادمین، نام فروشنده هم نشون داده میشه)
+  var groups = {};
+  list.forEach(function(c) {
+    var key = c.routeCode + '|' + c.routeName;
+    if (!groups[key]) groups[key] = { routeName: c.routeName, sellerName: c.sellerName, items: [] };
+    groups[key].items.push(c);
+  });
+
+  var keys = Object.keys(groups);
+  if (keys.length === 0) {
+    document.getElementById('listWrap').innerHTML = '<div class="empty">مشتری‌ای یافت نشد</div>';
+    return;
+  }
+
+  var html = '';
+  keys.forEach(function(key, gi) {
+    var g = groups[key];
+    var groupTotal = g.items.reduce(function(s,c){ return s + (Number(c.balance)||0); }, 0);
+    var label = g.routeName + (STATE.isAdmin && g.sellerName ? ' · ' + g.sellerName : '');
+    html += '<div class="rsec">';
+    html += '<div class="rhd" onclick="this.nextElementSibling.classList.toggle(\'hide\');this.querySelector(\'.rar\').classList.toggle(\'op\')">';
+    html += '<div class="rinfo"><div class="rname">' + label + '</div><div class="rmeta">' + faNum(g.items.length) + ' مشتری · مانده ' + faNum(groupTotal) + '</div></div>';
+    html += '<div class="rar">&#9662;</div></div>';
+    html += '<div class="rbody' + (gi === 0 ? '' : ' hide') + '">';
+    g.items.sort(function(a,b){ return (b.maxAge||0) - (a.maxAge||0); });
+    g.items.forEach(function(c) {
+      html += '<div class="cust">';
+      html += '<div><div class="nm"><span class="status-dot ' + c.status + '"></span>' + c.customerName + '</div>';
+      html += '<div class="rt">کد ' + c.customerCode + '</div></div>';
+      html += '<div><div class="bal ' + c.status + '">' + faNum(c.balance) + '</div>';
+      html += '<div class="age">' + statusLabel(c.status) + (c.maxAge != null ? ' · ' + faNum(c.maxAge) + ' روز' : '') + '</div></div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  document.getElementById('listWrap').innerHTML = html;
+}
+
+/* اگر قبلاً لاگین شده، مستقیم بره به داشبورد */
+(function init(){
+  if (sessionStorage.getItem('u') && sessionStorage.getItem('p')) showDashboard();
+})();
+</script>
+</body>
+</html>
